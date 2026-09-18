@@ -1,1 +1,535 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1565c0">
+    <meta name="description" content="Sachee Maths - 7 ශ්‍රේණිය ගණිතය PWA - Sri Lankan Grade 7 Mathematics Sinhala-Medium Learning App">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Sachee Maths">
+    
+    <!-- PWA Manifest & Icons -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <link rel="icon" type="image/png" href="icons/icon-192.png">
 
+    <title>Sachee Maths | 7 ශ්‍රේණිය ගණිතය</title>
+
+    <style>
+        :root {
+            --primary: #1565c0;
+            --primary-light: #1e88e5;
+            --primary-dark: #0d47a1;
+            --secondary: #f57c00;
+            --accent: #00acc1;
+            --success: #2e7d32;
+            --danger: #c62828;
+            --warning: #f9a825;
+            --bg: #f4f6f9;
+            --card-bg: #ffffff;
+            --text-main: #1f2937;
+            --text-sub: #6b7280;
+            --border: #e5e7eb;
+            --radius: 14px;
+            --shadow: 0 4px 14px rgba(0,0,0,0.06);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Malithi Web', 'Iskoola Pota', 'Noto Sans Sinhala', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+
+        /* Top Header */
+        header {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            color: white;
+            padding: 12px 18px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-title {
+            font-size: 1.15rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .icon-btn {
+            background: rgba(255,255,255,0.18);
+            border: none;
+            color: white;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 1.1rem;
+        }
+
+        .icon-btn:hover, .icon-btn:focus {
+            background: rgba(255,255,255,0.32);
+            outline: none;
+        }
+
+        /* App Main Container */
+        #app-view {
+            max-width: 1000px;
+            margin: 0 auto;
+            width: 100%;
+            padding: 16px;
+            flex: 1;
+        }
+
+        /* Bottom Navigation Bar */
+        nav.bottom-nav {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            background: var(--card-bg);
+            display: flex;
+            justify-content: space-around;
+            padding: 6px 0;
+            box-shadow: 0 -2px 12px rgba(0,0,0,0.08);
+            border-top: 1px solid var(--border);
+            z-index: 100;
+        }
+
+        .nav-item {
+            background: none;
+            border: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 0.72rem;
+            color: var(--text-sub);
+            cursor: pointer;
+            transition: 0.2s;
+            width: 16%;
+        }
+
+        .nav-item .nav-icon {
+            font-size: 1.25rem;
+            margin-bottom: 2px;
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        /* Cards and Layout Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 18px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+
+        .card-title {
+            font-size: 1.05rem;
+            font-weight: bold;
+            color: var(--text-main);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .progress-bar-bg {
+            background: #e5e7eb;
+            border-radius: 10px;
+            height: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-bar-fill {
+            background: var(--success);
+            height: 100%;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .badge-tag {
+            background: #e0f2fe;
+            color: #0284c7;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .chapter-card {
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .chapter-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+        }
+
+        /* Buttons and Inputs */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 10px 18px;
+            border-radius: 25px;
+            border: none;
+            font-size: 0.9rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+            text-decoration: none;
+        }
+
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-dark); }
+        .btn-secondary { background: var(--secondary); color: white; }
+        .btn-outline { background: transparent; border: 1.5px solid var(--primary); color: var(--primary); }
+        .btn-danger { background: var(--danger); color: white; }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 18px;
+            border: 1px solid var(--border);
+            border-radius: 25px;
+            font-size: 0.95rem;
+            outline: none;
+            margin-bottom: 16px;
+            background: white;
+        }
+
+        .search-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(21, 101, 192, 0.15);
+        }
+
+        /* Question & Quiz Mode */
+        .question-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 22px;
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+        }
+
+        .option-btn {
+            display: block;
+            width: 100%;
+            padding: 12px 16px;
+            margin: 8px 0;
+            text-align: left;
+            background: #f9fafb;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .option-btn:hover {
+            border-color: var(--primary-light);
+            background: #eff6ff;
+        }
+
+        .option-btn.correct {
+            background: #dcfce7;
+            border-color: var(--success);
+            color: #14532d;
+            font-weight: bold;
+        }
+
+        .option-btn.wrong {
+            background: #fee2e2;
+            border-color: var(--danger);
+            color: #7f1d1d;
+        }
+
+        /* Floating AI Tutor Badge */
+        #ai-tutor-badge {
+            position: fixed;
+            bottom: 75px;
+            right: 18px;
+            width: 58px;
+            height: 58px;
+            background: linear-gradient(135deg, var(--secondary), #f59e0b);
+            border-radius: 50%;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            box-shadow: 0 4px 16px rgba(245, 124, 0, 0.4);
+            cursor: pointer;
+            z-index: 200;
+            transition: transform 0.2s;
+        }
+
+        #ai-tutor-badge:hover {
+            transform: scale(1.08);
+        }
+
+        /* Modals */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.6);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 300;
+            padding: 16px;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: var(--radius);
+            max-width: 600px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 24px;
+            position: relative;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 16px; right: 16px;
+            background: #f3f4f6;
+            border: none;
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        /* Subtitle Banner */
+        #subtitle-banner {
+            position: fixed;
+            top: 62px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(13, 71, 161, 0.95);
+            color: white;
+            padding: 10px 22px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            z-index: 250;
+            display: none;
+            box-shadow: var(--shadow);
+            max-width: 90%;
+            text-align: center;
+        }
+
+        /* Diagnostic Audit Box */
+        .audit-box {
+            font-family: monospace;
+            background: #1e1e1e;
+            color: #00ff66;
+            padding: 16px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            white-space: pre-wrap;
+            overflow-x: auto;
+        }
+
+        .source-tag {
+            font-size: 0.78rem;
+            color: var(--text-sub);
+            font-style: italic;
+            margin-top: 6px;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header role="banner">
+        <div class="header-title">
+            <span>📐</span> <span id="header-greeting">ආයුබෝවන් Sachin! 👋</span>
+        </div>
+        <div class="header-actions">
+            <button id="btn-tts" class="icon-btn" aria-label="හඬ සහායක (TTS)" data-action="toggle-tts">🔊</button>
+            <button id="btn-search" class="icon-btn" aria-label="සොයන්න" data-action="open-search">🔍</button>
+            <button id="btn-bookmarks" class="icon-btn" aria-label="මගේ Bookmarks" data-action="open-bookmarks">🔖</button>
+            <button id="btn-parent-gate" class="icon-btn" aria-label="Parent Dashboard" data-action="open-parent-gate">👨‍👩‍👦</button>
+            <button id="btn-audit" class="icon-btn" aria-label="Developer Audit" data-action="open-audit">🛠️</button>
+        </div>
+    </header>
+
+    <!-- Subtitle Banner for TTS & Announcements -->
+    <div id="subtitle-banner" role="status" aria-live="polite">🤖 AI Maths Sir: සාදරයෙන් පිළිගනිමු!</div>
+
+    <!-- App Main View (Hydrated by JS modules) -->
+    <main id="app-view" role="main" aria-label="ප්‍රධාන අන්තර්ගතය">
+        <!-- Initial Loading State -->
+        <div class="card" style="text-align: center; padding: 40px 20px;">
+            <div style="font-size: 2.5rem; margin-bottom: 10px;">📐</div>
+            <h2>Sachee Maths පූරණය වෙමින් පවතියි...</h2>
+            <p style="color: var(--text-sub); margin-top: 8px;">ගණිත දත්ත පද්ධතිය සූදානම් කෙරේ.</p>
+        </div>
+    </main>
+
+    <!-- Floating AI Tutor Button -->
+    <button id="ai-tutor-badge" aria-label="AI Maths Sir Virtual Tutor" title="AI Maths Sir (Virtual Tutor)" data-action="open-tutor">🤖</button>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav" role="tablist" aria-label="ප්‍රධාන සංචලනය">
+        <button class="nav-item active" id="nav-student-dash" role="tab" aria-selected="true" aria-label="Dashboard" data-tab="student-dash">
+            <span class="nav-icon" aria-hidden="true">🏠</span>
+            <span>Dashboard</span>
+        </button>
+        <button class="nav-item" id="nav-learn" role="tab" aria-selected="false" aria-label="පාඩම්" data-tab="learn">
+            <span class="nav-icon" aria-hidden="true">📚</span>
+            <span>පාඩම්</span>
+        </button>
+        <button class="nav-item" id="nav-practice" role="tab" aria-selected="false" aria-label="අභ්‍යාස" data-tab="practice">
+            <span class="nav-icon" aria-hidden="true">📝</span>
+            <span>අභ්‍යාස</span>
+        </button>
+        <button class="nav-item" id="nav-multiplication" role="tab" aria-selected="false" aria-label="ගුණ කිරීම" data-tab="multiplication">
+            <span class="nav-icon" aria-hidden="true">✖️</span>
+            <span>ගුණ කිරීම</span>
+        </button>
+        <button class="nav-item" id="nav-reviews" role="tab" aria-selected="false" aria-label="පුනරීක්ෂණ" data-tab="reviews">
+            <span class="nav-icon" aria-hidden="true">🔄</span>
+            <span>පුනරීක්ෂණ</span>
+        </button>
+        <button class="nav-item" id="nav-glossary" role="tab" aria-selected="false" aria-label="ශබ්දකෝෂය" data-tab="glossary">
+            <span class="nav-icon" aria-hidden="true">📖</span>
+            <span>ශබ්දකෝෂය</span>
+        </button>
+    </nav>
+
+    <!-- Modal Overlays -->
+    <!-- 1. AI Tutor Modal -->
+    <div class="modal-overlay" id="tutor-modal" role="dialog" aria-modal="true" aria-labelledby="tutor-modal-title">
+        <div class="modal-content">
+            <button class="modal-close" id="btn-close-tutor" aria-label="වසන්න" data-action="close-modal" data-target="tutor-modal">×</button>
+            <h3 id="tutor-modal-title" style="color: var(--primary); margin-bottom: 12px; display:flex; align-items:center; gap:8px;">
+                🤖 AI Maths Sir (ඔබේ ගණිත මිතුරා)
+            </h3>
+            <div id="tutor-modal-body">
+                <p>ආයුබෝවන් Sachin! ඔබට පැහැදිලි කරගත යුතු කොටස තෝරන්න:</p>
+                <button class="option-btn" data-action="tutor-explain-concept">💡 පාඩම තේරුම් කර දෙන්න</button>
+                <button class="option-btn" data-action="tutor-show-example">✏️ විසඳූ උදාහරණ බලමු</button>
+                <button class="option-btn" data-action="tutor-help-question">❓ ප්‍රශ්නය විසඳන හැටි කියාදෙන්න</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Parent Gateway Modal -->
+    <div class="modal-overlay" id="parent-gate-modal" role="dialog" aria-modal="true" aria-labelledby="parent-gate-title">
+        <div class="modal-content" style="max-width: 400px; text-align: center;">
+            <button class="modal-close" id="btn-close-parent-gate" aria-label="වසන්න" data-action="close-modal" data-target="parent-gate-modal">×</button>
+            <h3 id="parent-gate-title" style="color: var(--primary); margin-bottom: 12px;">👨‍👩‍👦 දෙමාපිය පාලන පුවරුව (Parent Access)</h3>
+            <p style="font-size:0.85rem; color:var(--text-sub); margin-bottom: 16px;">ඇතුළු වීමට මුරපදය ඇතුළත් කරන්න:</p>
+            <label for="parent-password-input" class="sr-only" style="display:none;">මුරපදය</label>
+            <input type="password" id="parent-password-input" class="search-input" placeholder="මුරපදය..." style="text-align: center;" aria-label="මුරපදය">
+            <button class="btn btn-primary" id="btn-verify-parent-pass" style="width: 100%;" data-action="verify-parent-password">ඇතුළු වන්න</button>
+        </div>
+    </div>
+
+    <!-- 3. Search Modal -->
+    <div class="modal-overlay" id="search-modal" role="dialog" aria-modal="true" aria-labelledby="search-modal-title">
+        <div class="modal-content">
+            <button class="modal-close" id="btn-close-search" aria-label="වසන්න" data-action="close-modal" data-target="search-modal">×</button>
+            <h3 id="search-modal-title">🔍 සෙවුම් පුවරුව (Global Search)</h3>
+            <label for="global-search-input" style="display:none;">සොයන්න</label>
+            <input type="text" id="global-search-input" class="search-input" placeholder="පාඩමක්, සංකල්පයක්, ප්‍රශ්නයක් හෝ වචනයක් සොයන්න..." aria-label="සොයන්න" style="margin-top:12px;">
+            <div id="search-results-container"></div>
+        </div>
+    </div>
+
+    <!-- 4. Photo Upload / Assignment Submission Modal -->
+    <div class="modal-overlay" id="photo-upload-modal" role="dialog" aria-modal="true" aria-labelledby="photo-modal-title">
+        <div class="modal-content">
+            <button class="modal-close" id="btn-close-photo" aria-label="වසන්න" data-action="close-modal" data-target="photo-upload-modal">×</button>
+            <h3 id="photo-modal-title" style="color: var(--primary); margin-bottom: 12px;">📷 පැවරුම් ඡායාරූපය ලබාදීම</h3>
+            <p style="font-size:0.88rem; color:var(--text-sub); margin-bottom:12px;">ඔබ විසඳූ ගණිත පැවරුමේ ඡායාරූපයක් ලබාගන්න හෝ උඩුගත කරන්න.</p>
+            <input type="file" id="assignment-photo-input" accept="image/*" capture="environment" style="margin-bottom:12px;">
+            <div id="photo-preview-container" style="margin-bottom:12px; text-align:center;"></div>
+            <button class="btn btn-primary" id="btn-submit-photo-assignment" style="width:100%;" data-action="submit-photo-assignment">පැවරුම භාරදෙන්න</button>
+        </div>
+    </div>
+
+    <!-- PWA Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('Sachee Maths SW Registered:', reg.scope))
+                    .catch(err => console.warn('SW Registration Failed:', err));
+            });
+        }
+    </script>
+
+    <!-- Data Modules (Immutable Textbook Single Source of Truth) -->
+    <script src="data/metadata.js"></script>
+    <script src="data/chapters.js"></script>
+    <script src="data/questions.js"></script>
+    <script src="data/examples.js"></script>
+    <script src="data/visuals.js"></script>
+    <script src="data/glossary.js"></script>
+    <script src="data/reviews.js"></script>
+
+    <!-- Application JavaScript Modules -->
+    <script src="js/utils.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/router.js"></script>
+    <script src="js/progress.js"></script>
+    <script src="js/spacedRepetition.js"></script>
+    <script src="js/quiz.js"></script>
+    <script src="js/practice.js"></script>
+    <script src="js/multiplication.js"></script>
+    <script src="js/photoCheck.js"></script>
+    <script src="js/parent.js"></script>
+    <script src="js/reports.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
